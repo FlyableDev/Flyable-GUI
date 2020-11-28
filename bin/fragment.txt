@@ -1,0 +1,18 @@
+#version 330 core
+
+in vec4 ourColor;
+in vec2 TexCoord;
+
+out vec4 FragColor;
+
+// texture sampler
+uniform sampler2D  texture1;
+
+uniform float stroke;
+uniform float surfaceRotation;
+
+
+void main()
+{
+	FragColor = texture(texture1,TexCoord) * ourColor;
+} 
