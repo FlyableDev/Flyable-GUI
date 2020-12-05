@@ -11,7 +11,7 @@ import gui.widget.layout.vertical_layout as lay
 
 
 def main() :
-	a = win.Window("Flyable demo updated",800,600)
+	a = win.Window("Flyable demo",800,600)
 
 	page = pag.Page()
 	
