@@ -22,16 +22,14 @@ class Toggle(wid.Widget) :
 		self._text_size = 48.0
 		self._radius = 200.0
 		self._border_radius = 300.0
-		#Define Functionality
+		#Define Functionality. Feature refers to what the toggle controls (ex. Dark mode, autosave)
 		self.enabled = enabled
 		self.feature = feature
-		self.first_render_flag = True
+		
 
 	def update(self,window,page) :
 		super().update(window,page)
-		self._color.update()
-
-
+		self._color.update(20)
 
 
 	def change_state(self):
@@ -40,9 +38,9 @@ class Toggle(wid.Widget) :
 			self._color = self._color_off
 			self._text = "OFF"
 			self.xText_offset =  0.75
-			self.xCircle_offset = 0.5
+			self.xCircle_offset = 0.3
 
-		if self.enabled == False:
+		elif self.enabled == False:
 			self.enabled = True
 			self._color = self._color_on
 			self._text = "ON"
@@ -94,3 +92,9 @@ class Toggle(wid.Widget) :
 
 	def get_color(self):
 		return self._color
+
+	def get_state(self):
+		return self.enabled
+
+	def set_state(self, state):
+		self.enabled = state
