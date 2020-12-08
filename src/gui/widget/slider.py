@@ -9,7 +9,7 @@ class Slider(wid.Widget):
 		self.__min_value = min
 		self.__max_value = max
 		self.__value = 0
-		self.__horizontal = False
+		self.__horizontal = True
 
 
 	def update(self, window, page) :
@@ -23,14 +23,18 @@ class Slider(wid.Widget):
 		valueRatio = max(0.0,valueRatio)
 		valueRatio = min(1.0,valueRatio)
 
+
+		paint.set_paint_color(color.get_grey())
+
 		if self.is_horizontal():
-			realH = min(20.0,self.get_height())
+			realH = max(20.0,self.get_height())
+			circleRadius = realH * 0.45
 			paint.draw_rounded_rect(self.get_x(),self.get_y(),self.get_width(),realH,20.0)
 
 			circleX = self.get_x() + self.get_width() * valueRatio
 			circleY = self.get_y() + self.get_height() / 2
-			circleRadius = realH * 1.1
 
+			paint.set_paint_color(color.get_white())
 			paint.draw_circle(circleX,circleY,circleRadius)
 		else:
 			realW = max(20.0,self.get_width())

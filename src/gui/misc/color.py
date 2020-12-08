@@ -51,17 +51,18 @@ class DynColor :
 			self._g_reach = g
 			self._b_reach = b
 			self._a_reach = a
+		elif isinstance(r,Color):
+			self._r_reach = r._r
+			self._g_reach = r._g
+			self._b_reach = r._b
+			self._a_reach = r._a
 	
 		if direct == True :
-			self._r = self._r_reach
-			self._g = self._g_reach
-			self._b =self._b_reach
-			self._a = self._a_reach
-	
+			self.skip()
 
 	def update(self, frame = 10) :
 
-		for e in range(0,10):
+		for e in range(0,frame):
 			if self._r_reach > self._r :
 				self._r += 1
 			elif self._r_reach < self._r :
@@ -81,6 +82,12 @@ class DynColor :
 				self._a += 1
 			elif self._a_reach < self._a :
 				self._a -= 1
+
+	def skip(self):
+		self._r = self._r_reach
+		self._g = self._g_reach
+		self._b =self._b_reach
+		self._a = self._a_reach
 
 	def red(self) :
 		return self._r
@@ -114,3 +121,6 @@ def get_white() :
 
 def get_red() :
 	return Color(255,0,0,255)
+
+def get_grey():
+	return Color(50, 50, 50, 255)

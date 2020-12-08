@@ -28,6 +28,7 @@ class Window :
 		self._title = title
 		self.set_title(title)
 		self._pages = [page.Page()]
+		self._frame_count = 0
 
 	def show(self) :
 		loop = True
@@ -44,8 +45,10 @@ class Window :
 				if loop  :
 					lastPage.on_event(winEvent,self)
 	
-
 			lastPage.update(self)
+			self._frame_count += 1
+			if self._frame_count >= 60:
+				self._frame_count = 0
 
 			#render the current page
 			self._paint.set_surface_size(self.get_width(),self.get_height())
@@ -78,6 +81,9 @@ class Window :
 
 	def get_paint(self):
 		return self._paint
+
+	def get_frame(self):
+		return self._frame_count
 
 	def maximize(self) :
 		fly__gui__maximizeWindow(self._windowRef)

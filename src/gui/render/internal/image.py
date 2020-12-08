@@ -8,7 +8,8 @@ class __InternalImage:
 		self.__image_ref = null
 
 	def __del__(self):
-		fly__gui__freeImage(self.__image_ref)
+		if self.__image_ref != null:
+			fly__gui__freeImage(self.__image_ref)
 
 	def __load_from_bytes(self, byte_array):
 		self.__image_ref = fly__gui__readImage(byte_array)

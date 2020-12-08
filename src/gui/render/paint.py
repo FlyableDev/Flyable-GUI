@@ -2,6 +2,7 @@
 import gui.misc.color as col
 import math
 import gui.misc.rect
+import gui.widget.image as img
 
 external void* alesia_create_paint()
 external void alesia_free_paint(void*)
@@ -35,6 +36,7 @@ class Paint :
 		self._context = alesia_create_paint()
 		self._color_fill = col.get_white()
 		self._stroke_size = 0.0
+		self.__current_image = img.Image()
 
 	def set_surface_size(self,w,h) :
 		alesia_set_render_size(self._context,w,h)
@@ -60,6 +62,10 @@ class Paint :
 	def set_paint_color(self, color) :
 		self._color_fill = color
 		alesia_set_fill_color(self._context,self._color_fill.red(),self._color_fill.green(),self._color_fill.blue(),self._color_fill.alpha())
+
+	def set_paint_image(self, image):
+		self.__current_image = image
+		alesia_set_surface(self._context, image.__image_ref)
 
 	def set_stroke(self,stroke) :
 		self._stroke_size = stroke
