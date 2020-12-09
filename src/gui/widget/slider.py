@@ -25,9 +25,8 @@ class Slider(wid.Widget):
 		super().draw(paint,window,page)
 
 		diff = self.__max_value - self.__min_value
-		valueRatio = (self.__value - self.__min_value)  / float((self.__min_value - self.__max_value))
-		valueRatio = max(0.0,valueRatio)
-		valueRatio = min(1.0,valueRatio)
+		valueRatio = float(self.__value - self.__min_value)  / float(self.__max_value - self.__min_value)
+
 
 
 		paint.set_paint_color(color.get_grey())
@@ -37,7 +36,9 @@ class Slider(wid.Widget):
 			self.__circle_radius = realH * 0.45
 			paint.draw_rounded_rect(self.get_x(),self.get_y(),self.get_width(),realH,20.0)
 
-			self.__circle_x = self.get_x() + (self.get_width() - self.__circle_radius * 2) * valueRatio + self.__circle_radius
+
+			width = self.get_width() -  self.__circle_radius * 2
+			self.__circle_x = self.get_x() + self.__circle_radius + width * valueRatio
 			self.__circle_y = self.get_y() + self.get_height() / 2
 
 			paint.set_paint_color(color.get_white())

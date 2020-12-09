@@ -72,12 +72,14 @@ class TextArea (wid.Widget) :
 		if self.__selection_min != self.__selection_max:
 			currentLine = 0
 			currentIndex = 0
-			#for i in range(0,len(textLines)):
-				#if self.__current_index < currentIndex + len(testLines[i]) and self.__current_index >= currentIndex : #test for en entire highlight
-				#	self.draw_rect(self.get_x(), self.get_y() + currentLine * self.__font_size,self.get_w(),self.__font_size)
-				#elif self.__current_index: #test for a partial highlight
-				#currentIndex += len(textLines[i]) + 1
-				#currentLine += 1
+			for i in range(0,len(textLines)):
+				if self.__current_index < currentIndex + len(textLines[i]) and self.__current_index >= currentIndex : #test for en entire highlight
+					paint.draw_rect(self.get_x(), self.get_y() + currentLine * self.__font_size,self.get_width(),self.__font_size)
+				elif self.__current_index < currentIndex + len(textLines[i]) or self.__current_index >= currentIndex : #test for a partial highlight
+					start = paint.text_bound(0,0,textLines[i]).w
+					end = paint.text_bound(0,0,textLines[i]).w
+				currentIndex += len(textLines[i]) + 1
+				currentLine += 1
 
 		#render cursor
 		selectionPos = self.__get_char_position(paint,self.__current_index)
@@ -151,6 +153,8 @@ class TextArea (wid.Widget) :
 				self.__current_index += indexOnLine + 1
 				if self.__current_index > len(self.__current_text):
 					self.__current_index = len(self.__current_text)
+		elif key == "A":
+			self.select_all()
 
 	def write_text(self, txt):
 
@@ -159,6 +163,14 @@ class TextArea (wid.Widget) :
 
 		self.__current_text = leftText + txt + rightText
 		self.__current_index += len(txt)
+
+	def select_all_line(self):
+		self.__selection_min = self.__get_index_on_line(0)
+		self.__selection_max = self.__selection_min + len(self.__get_lines()[self.__get_current_line()])
+
+	def select_all(self):
+		self.__selection_min = 0
+		self.__selection_max = len(self.__current_text)
 
 	def __get_index_pos(self, paint, x, y):
 		#return the index pointed by the x and y point
@@ -170,14 +182,15 @@ class TextArea (wid.Widget) :
 
 		currentIndex = 0
 		currentLine = 0
+		clickedLine = self.__get_line_from_pos(y)
 		for i in lines:
-		#	if currentLine == line:
-		#		for e in range(0,len(lines[line])):
-		#			rectLeft = paint.text_bound(0,0,lines[line][0 : e])
-		#			rectRight = paint.text_bound(0,0,lines[line][0 : e + 1])
-		#			if x >= rectLeft.w and x <= rectRight.w:
-		#				return currentIndex + e
-			currentIndex += len(line) + 1
+			if currentLine == clickedLine:
+				for e in range(0,len(i) - 1):
+					rectLeft = paint.text_bound(0,0,i[0 : e])
+					rectRight = paint.text_bound(0,0,i[0 : e + 1])
+					if x >= rectLeft.w and x <= rectRight.w:
+						return currentIndex + e
+			currentIndex += len(i) + 1
 			currentLine += 1
 		return currentIndex - 1
 		
@@ -198,7 +211,7 @@ class TextArea (wid.Widget) :
 		return 0
 
 	def __get_index_on_line(self, index):
-		#return what index is the current selection on the current line
+		#return what index is the index on the current line
 		textLines = self.__current_text.split("\n")
 		currentIndex = 0
 		currentLine = 0

@@ -134,20 +134,20 @@ class Event :
 	def stop_text_input(self) :
 		fly__gui__stopTextInput()
 
-def is_ctrl_pressed(self) :
+def is_ctrl_pressed() :
 	return fly__gui__isCtrlPressed() == 1
 
-def is_shift_pressed(self) :
+def is_shift_pressed() :
 	return fly__gui__isShiftPressed() == 1
 
-def is_alt_pressed(self) :
+def is_alt_pressed() :
 	return fly__gui__isAltPressed() == 1
 
-def set_clipboard(self,txt) :
+def set_clipboard(txt) :
 	if isinstance(txt,string.str) :
 		fly__gui__setClipboard(txt)
 
-def get_clipboard(self) :
+def get_clipboard() :
 	result = str("")
 	fly__gui__getClipboard(result)
 	result.__index()
