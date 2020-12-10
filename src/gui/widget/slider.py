@@ -18,10 +18,10 @@ class Slider(wid.Widget):
 		self.__is_sliding = False
 
 
-	def update(self, window, page) :
+	def update(self, window, page):
 		super().update(window,page)
 
-	def draw(self, paint, window, page) :
+	def draw(self, paint, window, page):
 		super().draw(paint,window,page)
 
 		diff = self.__max_value - self.__min_value

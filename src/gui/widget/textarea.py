@@ -2,10 +2,8 @@ import gui.widget.widget as wid
 import gui.misc.color as col
 import gui.misc.event as ev
 import gui.misc.rect as rec
-import gui.widget.slider
+import gui.widget.scrollbar
 
-
-class TextBoxTextBlock :
 
 
 class TextArea (wid.Widget) :
@@ -33,8 +31,9 @@ class TextArea (wid.Widget) :
 		self.__hold = False
 		self.__font_size = 32.0
 
-		self.__vertical_scroll = slider.Slider()
-		self.__horizontal_scroll = slider.Slider()
+		self.__vertical_scroll = scrollbar.ScrollBar()
+		self.__vertical_scroll.set_horizontal(False)
+		self.__horizontal_scroll = scrollbar.ScrollBar()
 
 
 	def update(self, window, page):
@@ -51,6 +50,25 @@ class TextArea (wid.Widget) :
 				self.__cursor_color.set(0,0,0,0)
 			else:
 				self.__cursor_color.set(0,0,0,255)
+
+		self.__vertical_scroll.update(window, page)
+		self.__horizontal_scroll.update(window, page)
+
+
+		#update the scroll bars
+		longest_line = 0.0
+		for e in self.__get_lines():
+			window.get_paint().set_font_size(self.__font_size)
+			longest_line = max(longest_line, window.get_paint().text_bound(0,0,e).w)
+		self.__horizontal_scroll.set_max_value(longest_line)
+		self.__vertical_scroll.set_max_value(len(self.__get_lines()) * self.__font_size)
+
+		self.__horizontal_scroll.set_position(self.get_x(),self.get_y() + self.get_height() - 50.0)
+		self.__horizontal_scroll.set_size(self.get_width(),50.0)
+
+		self.__vertical_scroll.set_position(self.get_x(), self.get_y())
+		self.__vertical_scroll.set_size(50.0, self.get_height() - 40.0)
+
 
 	def draw(self,paint,window,page) :
 		super().draw(paint,window,page)
@@ -86,9 +104,18 @@ class TextArea (wid.Widget) :
 		paint.set_paint_color(self.__cursor_color.to_color())
 		paint.draw_rect(selectionPos[0] + 4.0,selectionPos[1] + self.__font_size / 4,2,self.__font_size )
 
+		if self.__horizontal_scroll.get_max_value() > self.get_width():
+			self.__horizontal_scroll.draw(paint, window, page)
+		if self.__vertical_scroll.get_max_value() > self.get_height():
+			self.__vertical_scroll.draw(paint, window, page)
+
 
 	def on_event(self, event, window, page):
 		super().on_event(event, window,page)
+
+		self.__horizontal_scroll.on_event(event, window,page)
+		self.__vertical_scroll.on_event(event, window, page)
+
 		if event.get_event_type() == ev.EventType.TextInput and self.is_in_edit():
 			input = event.get_input_text()
 			self.write_text(input)
