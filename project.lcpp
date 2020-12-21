@@ -19,6 +19,7 @@ src/gui/widget/text.py
 src/gui/widget/image.py
 src/gui/render/internal/image.py
 src/gui/widget/toggle.py
+src/gui/widget/filetree.py
 $$$?APP/Lib/StdLib/Project.lcpp
 $$$?APP/Lib/FlyGUI/link/win64/libFlyGUI.a
 $$$?APP/Lib/FlyGUI/link/win64/libSDL2-static.a
