@@ -4,34 +4,44 @@ import gui.misc.event as ev
 import gui.misc.rect as rec
 import gui.widget.slider
 
-class File:
+class Treeitem:
 
 #	give each file a filename and a space as content
-	def __init__(self, filename = "filename", filecontent = " "):
-		self.filename = filename
-		self.filecontent = filecontent
-		self.isopen = False
+	def __init__(self, items = [], filetext = "default text" ):
+#	if the item is a file, it will have the "_file_text" attribute, which can be assumed to be text. items attribute will remain an empty list
+#	if the item is a folder, the items list will be filled with other "Treeitems", that will be either files or folders
+		self.items = items
+		self._file_text = filetext
+		self.open = False
 
-class Folder:
-	def __init__(self,foldername = "foldername"):
-		self.foldername = foldername
-#	foldercontents is a list that can contain files or other folders
-		self.foldercontents = [null]
-#	self.expanded defines whether the folder is expanded in the filetree or not
-		self.expanded = False
-#	self.opencontent defines whether any files in the folder are open in the IDE
-		self.opencontent = False
+#	I know this part is incomplete but it's not critical right now and holding back progress. Had trouble getting folders and files to combine.
+	def __str__(self):
+		return self._file_text
 
-#	How to add a new item
-	def additem(self, foldercontents, newitem):
-		self.foldercontents.append(newitem)
+	def __repr__(self):
+		return self._file_text
 
-#	This class brings together the Folder and Fileclasses to allow folder to be nested in other folder alongside files..		
-class Filesystem:
-	def __init__(self):
-		pass
+#Assign text to the Treeitem. This is what would be accessed when the file is open
+	def replace_text(self, new_string):
+		self._file_text = new_string
 
+#	Add a new item to the system
 
+	def add_item(self, new_item):
+		self.items.append(new_item)
+
+	def open(self):
+		if self.open == True:
+			self.open == False
+		elif self.open == False:
+			self.open = True
+
+	def get_open(self):
+		return self.open
+
+	def print_items(self):
+		for i in self.items:
+			print(i)
 
 
 class Filetree(wid.Widget):

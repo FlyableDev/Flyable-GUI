@@ -14,16 +14,13 @@ import gui.widget.layout.vertical_layout as lay
 def main() :
 	a = win.Window("Flyable demo",800,600)
 
-	#root = filetree.Folder("root")
-	#file1_1 = filetree.File("file1_1","This is file 1 on level 1")
-	#print(root.foldername)
-	#print(root.foldercontents[0])
-	#root.foldercontents.additem("file1")
-	#filesystem = [file1_1]
-	#filesystem.append("file1")
-	#filesystem.append(["subfile1","subfile2"])
-	#filesystem.append("samplefile")
-	#print(filesystem[0])
+	root = filetree.Treeitem([], "Does this allow me to modify text?")
+
+	folder1 = filetree.Treeitem()
+	root.add_item(folder1)
+	print(root)
+
+	root.print_items()
 	
 	page = pag.Page()
 	
