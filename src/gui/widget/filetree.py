@@ -18,53 +18,57 @@ class Treeitem:
 		self._file_text = filetext
 		self.open = False
 
-#	I know this part is incomplete but it's not critical right now and holding back progress. Had trouble getting folders and files to combine.
+#	calling print on the object will return only the name
 	def __str__(self):
 		return self.name
 
 	def __repr__(self):
 		return self.name
 
+#	Instead of using print(object), this function will print the contents of the object (files in a folder)
+#	Could eventually be made in a recursive function that can print out multiple levels
+	def print_items(self):
+
+		i = 0
+		while i < len(self.items):
+			print(self.items[i])
+			i += 1
+
 #Assign text to the Treeitem. This is what would be accessed when the file is open
 	def replace_text(self, new_string):
 		self._file_text = new_string
 
-#	Add a new item to the system
-
+#	Add a new item to the items list
 	def add_item(self, new_item):
 		self.items.append(new_item)
 
+
+#	Open or close a file/folder
 	def open(self):
 		self.open = True
 
 	def close(self):
 		self.open = False
 
+#	return the state of the item
 	def get_open(self):
 		return self.open
 
 	def rename(self,new_name):
 		self.name = new_name
 
-	def print_item(self):
-		print("nothing in particular")
+	def get_name(self):
+		return self.name
 
-	def print_items(self):
-#	Could eventually be made in a recursive function that can print out multiple levels
-		i = 0
-		while i < len(self.items):
-			print(self.items[i])
-			i += 1
-
-
+#	Missing a method to sort items in the list so that they are presented as alpabetical files, and alphabetical folders
 
 class Filetree(wid.Widget):
 
 #	localroot is the folder that is first openend in the IDE, like a main project folder
-	def __init__(self, localroot = null):
+	def __init__(self, localroot):
 		super().__init__()
 		self.localroot = localroot
-		self._text_size = 14
+		self._text_size = 50
 #	Colors
 		self._background_color = col.get_black()
 #	Colors will be used to indicate whether the item is open in the text editor or not
@@ -77,20 +81,20 @@ class Filetree(wid.Widget):
 		self._folder_open_color = col.Color(50,50,50,255)
 
 
-#	The visibile_items function takes the Filesystem object and returns a sequential list of the items that need to be displayed along with
+#	Will need to sort the items list to show files alphabetically, and then folders alphabetically
 
 #		type (file/folder) 
 #		color assignment
 #		name (text to be displayed)
 #		indentation level
 
-#	The criteria for being displayed is whether the parent folder is expanded.
+#	The criteria for being displayed is whether the parent folder is open.
 
 	def visible_items(self, filesystem):
 		pass
 
 
-#	render the widget
+#	render the widget. Remember that tyhis is working through the recursive filetree
 	def draw(self,paint,window,page):
 		super().draw(paint,window,page)
 
@@ -102,6 +106,22 @@ class Filetree(wid.Widget):
 #	Shift down by an amount that is proportional to the font size
 #	Define specific areas within the widget that correspond to each item (needs index, top and bottom y boundaries. X boundaries taken from Widget
 
+#	Start with just rendering  the root level rectangle. This part isn't recursive yet.
+
+		paint.set_paint_color(self._folder_color)
+		paint.draw_rect(self.get_x(),self.get_y(),self.get_width(),self.get_height()*0.1)
+		paint.set_paint_color(self._text_color)
+		
+		xText = self.get_x() + self.get_width() * 0.1
+		yText = self.get_y() + self.get_height() * 0.05
+		paint.draw_text(xText,yText,self.localroot.name)
+
+		i = 1
+		while i <= len(self.localroot.items):
+			#xText = self.get_x() + self.get_width() * 0.1
+			yText = self.get_y() + self.get_height() * 0.05 * i
+			paint.draw_text(xText,yText,self.localroot.items[i].name)
+			i +=1
 
 #	Define the actions that will occur for clicking and double clicking on different areas of the Filetree
 #	Include time calculation between 1st and 2nd click to define double click

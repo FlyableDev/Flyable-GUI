@@ -14,16 +14,20 @@ import gui.widget.layout.vertical_layout as lay
 def main() :
 	a = win.Window("Flyable demo",800,600)
 
-	root = filetree.Treeitem([],"root")
+#creating sample filetree for testing
+
+	root = filetree.Treeitem([],"folder","root")
 
 	folder1 = filetree.Treeitem([], "folder","folder1")
 	folder2 = filetree.Treeitem([], "folder", "folder2")
 	file1 = filetree.Treeitem([], "file", "file1", "This is a sample")
 	file2 = filetree.Treeitem([], "file", "file2", "This is another sample")	
+	folder3 = filetree.Treeitem([], "folder", "folder3", "This is a nested folder")
 	root.add_item(folder1)
 	root.add_item(folder2)
 	root.add_item(file1)
 	root.items[1].add_item(file1)
+	root.items[1].add_item(folder3)
 	print(root)
 
 	print(root.items[0])
@@ -37,7 +41,7 @@ def main() :
 
 	page = pag.Page()
 	
-	page.set_widget(filetree.Filetree())
+	page.set_widget(filetree.Filetree(root))
 	#page.set_widget(text.Text("Pokemon"))
 
 	a.add_page(page)
