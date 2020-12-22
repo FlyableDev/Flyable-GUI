@@ -7,19 +7,23 @@ import gui.widget.slider
 class Treeitem:
 
 #	give each file a filename and a space as content
-	def __init__(self, items = [], filetext = "default text" ):
+	def __init__(self, items = [], type = "file", name = "", filetext = "" ):
 #	if the item is a file, it will have the "_file_text" attribute, which can be assumed to be text. items attribute will remain an empty list
 #	if the item is a folder, the items list will be filled with other "Treeitems", that will be either files or folders
+#	The object must know it's own name, which is not necessarily the name of the variable that stores the object
+#	Should introduce logic to only allow "file" and "folder" types
+		self.type = type
+		self.name = name
 		self.items = items
 		self._file_text = filetext
 		self.open = False
 
 #	I know this part is incomplete but it's not critical right now and holding back progress. Had trouble getting folders and files to combine.
 	def __str__(self):
-		return self._file_text
+		return self.name
 
 	def __repr__(self):
-		return self._file_text
+		return self.name
 
 #Assign text to the Treeitem. This is what would be accessed when the file is open
 	def replace_text(self, new_string):
@@ -31,17 +35,27 @@ class Treeitem:
 		self.items.append(new_item)
 
 	def open(self):
-		if self.open == True:
-			self.open == False
-		elif self.open == False:
-			self.open = True
+		self.open = True
+
+	def close(self):
+		self.open = False
 
 	def get_open(self):
 		return self.open
 
+	def rename(self,new_name):
+		self.name = new_name
+
+	def print_item(self):
+		print("nothing in particular")
+
 	def print_items(self):
-		for i in self.items:
-			print(i)
+#	Could eventually be made in a recursive function that can print out multiple levels
+		i = 0
+		while i < len(self.items):
+			print(self.items[i])
+			i += 1
+
 
 
 class Filetree(wid.Widget):
