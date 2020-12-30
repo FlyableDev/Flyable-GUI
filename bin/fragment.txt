@@ -1,18 +1,107 @@
 #version 330 core
 
-in vec4 ourColor;
-in vec2 TexCoord;
+in vec3 pos;
 
-out vec4 FragColor;
+layout(origin_upper_left) in vec4 gl_FragCoord;
 
-// texture sampler
-uniform sampler2D  texture1;
+out vec4 result_color;
 
+// texture info
+uniform sampler2D texture1;
+uniform vec2 texCoord;
+uniform vec2 texSize;
+
+//rendering info
+uniform vec4 fillColor;
 uniform float stroke;
 uniform float surfaceRotation;
 
+//path info
+uniform uint pathCount;
+uniform float pathPos[2048];
+
+vec4 getApplyTextureColor(sampler2D tex,vec2 currentPos,vec2 texPos,vec2 texSize)
+{
+	ivec2 textureSize = textureSize(tex,0);
+	float x = (texPos.x - currentPos.x) / float(textureSize.x);
+	float y = (texPos.y - currentPos.y) / float(textureSize.y);
+	return texture(tex,vec2(x,1.0 - y));
+}
+
+
+bool isInside(float circle_x, float circle_y, float rad, float x, float y) 
+{ 
+	if ((x - circle_x) * (x - circle_x) + (y - circle_y) * (y - circle_y) <= rad * rad) 
+		return true; 
+	else
+		return false; 
+} 
+
+bool approx(float a,float b)
+{
+	if(max(a,b) - min(a,b) < 0.001f)
+		return true;
+	return false;
+}
+
+bool scanline(vec2 p1,vec2 p2,vec2 frag)
+{
+	if( frag.y >= min(p1.y,p2.y) &&  frag.y <= max(p1.y,p2.y) ) //is the line in the boundaries
+	{
+    		float ya = (p2.y - p1.y);
+    		float xa = (p2.x - p1.x);
+    		if(approx(xa,0.0) == false)
+    		{
+        		float a = ya / xa;
+       			float b = p2.y - (a * p2.x);
+
+			if(approx(a,0.f)) //straight line never scan line
+				return false;
+
+
+        		return (frag.y - b) / a <= frag.x;
+		} 
+
+		return p2.x <= frag.x;
+	}
+
+	return false;
+}
 
 void main()
 {
-	FragColor = texture(texture1,TexCoord) * ourColor;
+	int totalHit = 0;
+	for(int x = 0;x < 3;++x)
+	{
+		for(int y = 0;y < 3;++y)
+		{
+			vec2 currentFrag = vec2(gl_FragCoord.x - 0.25 + float(x) * 0.25,gl_FragCoord.y - 0.25 + float(y) * 0.25);
+			int insidePath = 0;
+			for(int i = 2;i < pathCount;i += 2) //scanline every path
+			{
+				vec2 p1 = vec2(pathPos[i - 2],pathPos[i - 1]);
+				vec2 p2 = vec2(pathPos[i],pathPos[i + 1]);
+				insidePath += int(scanline(p1,p2,currentFrag));
+
+				if(isInside(p1.x,p1.y,1.f,currentFrag.x,currentFrag.y))
+				{
+					//result_color = vec4(1,0,0,1);
+					//return;
+				}
+	
+
+			}
+
+			if(insidePath % 2 != 0)
+				totalHit += 1;
+
+		}
+	}
+
+	vec4 texture_pixel = getApplyTextureColor(texture1, vec2(gl_FragCoord.x,gl_FragCoord.y),texCoord,texSize);
+	
+	vec4 apply_color = vec4(fillColor.r,fillColor.g,fillColor.b,fillColor.a * (float(totalHit) / 9.0));
+
+	result_color = texture_pixel * apply_color;
 } 
+

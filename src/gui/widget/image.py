@@ -2,21 +2,15 @@ import gui.widget.widget as wid
 import gui.misc.event as ev
 import gui.misc.color as color
 import gui.render.internal.image
+import gui.widget.image as img
+import gui.render.internal.image as intimg
 
-
-def image_from_file(path):
-
-	return Image()
-
-def image_from_data():
-
-	return Image()
 
 class Image(wid.Widget):
 
-	def __init__(self):
+	def __init__(self, data = None):
 		super().__init__()
-		self.__image_ref = image.__InternalImage()
+		self.__image_ref = image.__InternalImage(data)
 
 	def update(self, window, page) :
 		super().update(window,page)

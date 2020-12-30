@@ -1,31 +1,29 @@
 #version 330 core
-layout (location = 0) in vec3 position;
-layout (location = 1) in vec4 color;
-layout (location = 2) in vec2 tex;
 
-out vec4 ourColor;
-out vec2 TexCoord;
+layout (location = 0) in vec3 position;
+
+out vec3 frag_pos;
 
 uniform mat4 u_projection_matrix;
+
+// texture info
+uniform sampler2D texture1;
+uniform vec2 texCoord;
+uniform vec2 texSize;
+
+//rendering info
+uniform vec4 fillColor;
 uniform float stroke;
 uniform float surfaceRotation;
 
-vec2 rotateUV(vec2 uv, vec2 pivot, float rotation) 
-{
-    float sine = sin(rotation);
-    float cosine = cos(rotation);
+//path info
+uniform uint pathCount;
+uniform float pathPos[2048];
 
-    uv -= pivot;
-    uv.x = uv.x * cosine - uv.y * sine;
-    uv.y = uv.x * sine + uv.y * cosine;
-    uv += pivot;
 
-    return uv;
-}
 
 void main()
 {
-	gl_Position = u_projection_matrix * vec4(position, 1.0f);
-	ourColor = color;
-	TexCoord = rotateUV(tex,vec2(0.0,0.0),surfaceRotation);
+	frag_pos = position;
+	gl_Position = u_projection_matrix * vec4(position,1);
 }

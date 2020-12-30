@@ -7,8 +7,8 @@ class ScrollBar(widget.Widget):
 
 	def __init__(self):
 		super().__init__()
-		self.__current_min_value = 45.0
-		self.__current_max_value = 55.0
+		self.__current_min_value = 0.0
+		self.__current_max_value = 10.0
 		self.__range = 10.0
 		self.__max_value = 100.0
 		self.__pressed = False
@@ -82,12 +82,23 @@ class ScrollBar(widget.Widget):
 		self.__current_min_value = max(0.0,value)
 		self.__validate_bounce()
 
+	def set_current_min_value(self, value):
+		initialValue = self.__current_min_value
+		minValue = value - self.get_range() / 2.0
+		self.__current_min_value = max(0.0,minValue)
+		self.__validate_bounce()
+
+	def get_current_min_value(self):
+		return self.__current_min_value
+
+	def get_current_max_value(self):
+		return self.__current_max_value
+
 	def set_range(self, range):
 		self.__range = range
 
 	def get_range(self):
 		return self.__range
-
 
 	def set_max_value(self, max):
 		self.__max_value = max

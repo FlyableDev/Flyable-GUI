@@ -10,6 +10,7 @@ class Widget :
 	def update(self,window,page) :
 
 	def draw(self,paint,window,page) :
+		paint.reset()
 
 	def on_event(self,event,window,page) :
 

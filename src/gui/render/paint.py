@@ -3,6 +3,7 @@ import gui.misc.color as col
 import math
 import gui.misc.rect
 import gui.widget.image as img
+import gui.misc.color as col
 
 external void* alesia_create_paint()
 external void alesia_free_paint(void*)
@@ -36,18 +37,29 @@ class Paint :
 		self._context = alesia_create_paint()
 		self._color_fill = col.get_white()
 		self._stroke_size = 0.0
-		self.__current_image = img.Image()
+		self.__current_image =  img.Image()
+		self.__font_size = 14.0
 
-	def set_surface_size(self,w,h) :
+		self.reset()
+
+	def set_surface(self, image):
+		if isinstance(image,img.Image):
+			self.__current_image = image
+			alesia_set_surface(self._context, self.__current_image.__image_ref)
+		else:
+			self.__current_image = img.Image()
+			alesia_set_surface(self._context,null)
+
+	def set_surface_size(self,w,h):
 		alesia_set_render_size(self._context,w,h)
 
-	def clear(self,color) :
+	def clear(self,color):
 		alesia_clear(self._context,color.red(),color.green(),color.blue(),color.alpha())
 
-	def begin_path(self,x,y) :
+	def begin_path(self,x,y):
 		alesia_begin_path(self._context,x,y)
 
-	def close_path(self) :
+	def close_path(self):
 		alesia_close(self._context)
 
 	def add_line(self,x,y) :
@@ -67,16 +79,17 @@ class Paint :
 		self.__current_image = image
 		alesia_set_surface(self._context, image.__image_ref)
 
-	def set_stroke(self,stroke) :
-		self._stroke_size = stroke
-
 	def set_text_align(self,align) :
 
 	def set_font_size(self,size) :
+		self.__font_size = size
 
 	def set_font(self,font) :
 
 	def set_stroke_color(self,color) :
+
+	def set_stroke(self, stroke) :
+		self._stroke_size = stroke
 
 	def draw_arc(self,xc,yc,x1,y1,x4,y4,radius) :
 			self.begin_path(xc,yc)
@@ -147,9 +160,11 @@ class Paint :
 		self.close_path()
 
 	def set_font_size(self,size):
+		self.__font_size = size
 		alesia_set_font_size(self._context,size)
 
 	def get_font_size(self):
+		return self.__font_size
 
 	def draw_text(self,x,y,txt):
 		fly__gui__drawText(self._context,txt,x,y)
@@ -160,6 +175,10 @@ class Paint :
 		return result
 
 	def reset(self) :
+		self.set_font_size(14.0)
+		self.set_paint_color(col.get_white())
+		self.__current_image =  img.Image()
+		self.reset_scissor()
 
 	def reset_scissor(self) :
 

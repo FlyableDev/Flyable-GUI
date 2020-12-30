@@ -29,7 +29,7 @@ class TextArea (wid.Widget) :
 		self.__selection_max = 0
 		self.__current_index = 0
 		self.__hold = False
-		self.__font_size = 32.0
+		self.__font_size = 20.0
 
 		self.__vertical_scroll = scrollbar.ScrollBar()
 		self.__vertical_scroll.set_horizontal(False)
@@ -60,18 +60,24 @@ class TextArea (wid.Widget) :
 		for e in self.__get_lines():
 			window.get_paint().set_font_size(self.__font_size)
 			longest_line = max(longest_line, window.get_paint().text_bound(0,0,e).w)
-		self.__horizontal_scroll.set_max_value(longest_line)
-		self.__vertical_scroll.set_max_value(len(self.__get_lines()) * self.__font_size)
 
+
+		self.__horizontal_scroll.set_range(self.get_width())
+		self.__horizontal_scroll.set_max_value(longest_line)
 		self.__horizontal_scroll.set_position(self.get_x(),self.get_y() + self.get_height() - 50.0)
 		self.__horizontal_scroll.set_size(self.get_width(),50.0)
 
-		self.__vertical_scroll.set_position(self.get_x(), self.get_y())
-		self.__vertical_scroll.set_size(50.0, self.get_height() - 40.0)
 
+		self.__vertical_scroll.set_range(self.get_height())
+		self.__vertical_scroll.set_max_value(len(self.__get_lines()) * self.__font_size)
+		self.__vertical_scroll.set_size(50.0, self.get_height() - 40.0)
+		self.__vertical_scroll.set_position(self.get_x() + self.get_width() - 30 , self.get_y())
+		
 
 	def draw(self,paint,window,page) :
 		super().draw(paint,window,page)
+
+		paint.set_paint_color(col.get_white())
 		paint.draw_rounded_rect(self.get_x(),self.get_y(),self.get_width(),self.get_height(),3.0)
 
 
@@ -82,7 +88,7 @@ class TextArea (wid.Widget) :
 
 		textLines = self.__current_text.split("\n")
 		for i in range(0,len(textLines)):
-			paint.draw_text(self.get_x(),self.get_y() + self.__font_size * (i + 1),textLines[i])
+			paint.draw_text(self.get_x() - self.__horizontal_scroll.get_current_min_value(),self.get_y() + self.__font_size * (i + 1) - self.__vertical_scroll.get_current_min_value(),textLines[i])
 
 
 		#render selection highlight
@@ -91,18 +97,17 @@ class TextArea (wid.Widget) :
 			currentLine = 0
 			currentIndex = 0
 			for i in range(0,len(textLines)):
-				if self.__current_index < currentIndex + len(textLines[i]) and self.__current_index >= currentIndex : #test for en entire highlight
-					paint.draw_rect(self.get_x(), self.get_y() + currentLine * self.__font_size,self.get_width(),self.__font_size)
-				elif self.__current_index < currentIndex + len(textLines[i]) or self.__current_index >= currentIndex : #test for a partial highlight
-					start = paint.text_bound(0,0,textLines[i]).w
-					end = paint.text_bound(0,0,textLines[i]).w
+				lineLenght = len(textLines[i])
+				if self.__current_index < currentIndex + lineLenght and self.__current_index >= currentIndex : #test for an highlight in the line
+					start = paint.text_bound(0,self.__selection_min - currentIndex,textLines[i]).w
+					end = paint.text_bound(self.__selection_max - currentIndex,lineLenght,textLines[i]).w
 				currentIndex += len(textLines[i]) + 1
 				currentLine += 1
 
 		#render cursor
 		selectionPos = self.__get_char_position(paint,self.__current_index)
 		paint.set_paint_color(self.__cursor_color.to_color())
-		paint.draw_rect(selectionPos[0] + 4.0,selectionPos[1] + self.__font_size / 4,2,self.__font_size )
+		paint.draw_rect(selectionPos[0] + 4.0 - self.__horizontal_scroll.get_current_min_value(),selectionPos[1] + self.__font_size / 4 - self.__vertical_scroll.get_current_min_value(),2,self.__font_size )
 
 		if self.__horizontal_scroll.get_max_value() > self.get_width():
 			self.__horizontal_scroll.draw(paint, window, page)
@@ -185,6 +190,9 @@ class TextArea (wid.Widget) :
 
 	def write_text(self, txt):
 
+		if self.is_selection_active():
+			self.__current_text = self.__current_text[0 : self.__selection_min] + self.__current_text[self.__selection_min : len(self.__current_text)]
+
 		leftText = self.__current_text[0 : self.__current_index]
 		rightText = self.__current_text[ self.__current_index : len(self.__current_text) + len(txt)]
 
@@ -199,6 +207,9 @@ class TextArea (wid.Widget) :
 		self.__selection_min = 0
 		self.__selection_max = len(self.__current_text)
 
+	def is_selection_active(self):
+		return self.__selection_min != 0 and self.__selection_max != 0
+
 	def __get_index_pos(self, paint, x, y):
 		#return the index pointed by the x and y point
 		lines = self.__get_lines()
@@ -209,9 +220,8 @@ class TextArea (wid.Widget) :
 
 		currentIndex = 0
 		currentLine = 0
-		clickedLine = self.__get_line_from_pos(y)
 		for i in lines:
-			if currentLine == clickedLine:
+			if currentLine == lineId:
 				for e in range(0,len(i) - 1):
 					rectLeft = paint.text_bound(0,0,i[0 : e])
 					rectRight = paint.text_bound(0,0,i[0 : e + 1])
@@ -258,6 +268,9 @@ class TextArea (wid.Widget) :
 
 	def is_in_edit(self):
 		return self.__is_in_edit
+
+	def set_text(self, txt):
+		self.__current_text = txt
 
 	def get_text(self):
 		return self.__current_text
